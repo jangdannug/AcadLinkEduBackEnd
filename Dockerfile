@@ -2,12 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj files first for layer caching
-COPY ["AcadLinkEduBackEnd.API/AcadLinkEduBackEnd.API.csproj", "/"]
+# Copy csproj files with folder structure
+COPY ["AcadLinkEduBackEnd.API/AcadLinkEduBackEnd.API.csproj", "AcadLinkEduBackEnd.API/"]
 COPY ["AcadLinkEduBackEnd.Application/AcadLinkEduBackEnd.Application.csproj", "AcadLinkEduBackEnd.Application/"]
 COPY ["AcadLinkEduBackEnd.Domain/AcadLinkEduBackEnd.Domain.csproj", "AcadLinkEduBackEnd.Domain/"]
 COPY ["AcadLinkEduBackEnd.Infrastructure/AcadLinkEduBackEnd.Infrastructure.csproj", "AcadLinkEduBackEnd.Infrastructure/"]
-
 
 # Restore packages
 RUN dotnet restore "AcadLinkEduBackEnd.API/AcadLinkEduBackEnd.API.csproj"
