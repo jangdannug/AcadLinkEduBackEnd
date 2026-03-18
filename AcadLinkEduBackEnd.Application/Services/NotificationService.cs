@@ -17,6 +17,7 @@ public class NotificationService
     public async Task<List<Notification>> GetNotificationsAsync(int userId)
     {
         var resp = await _supabase.From<Notification>().Where(n => n.UserId == userId).Get();
+
         return resp.Models.ToList();
     }
 
