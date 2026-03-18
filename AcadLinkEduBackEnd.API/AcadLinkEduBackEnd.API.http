@@ -1,0 +1,6 @@
+@AcadLinkEduBackEnd.API_HostAddress = http://localhost:5051
+
+GET {{AcadLinkEduBackEnd.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

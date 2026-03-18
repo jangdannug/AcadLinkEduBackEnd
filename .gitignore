@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/AcadLinkEduBackEnd.API/bin/Debug/net10.0
+/AcadLinkEduBackEnd.API/obj
+/AcadLinkEduBackEnd.Application/bin/Debug/net10.0
+/AcadLinkEduBackEnd.Application/obj
+/AcadLinkEduBackEnd.Domain/bin/Debug/net10.0
+/AcadLinkEduBackEnd.Domain/obj
+/AcadLinkEduBackEnd.Infrastructure/bin/Debug/net10.0
+/AcadLinkEduBackEnd.Infrastructure/obj

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AcadLinkEduBackEnd.API/AcadLinkEduBackEnd.API.csproj" />
+  <Project Path="AcadLinkEduBackEnd.Application/AcadLinkEduBackEnd.Application.csproj" />
+  <Project Path="AcadLinkEduBackEnd.Domain/AcadLinkEduBackEnd.Domain.csproj" />
+  <Project Path="AcadLinkEduBackEnd.Infrastructure/AcadLinkEduBackEnd.Infrastructure.csproj" />
+</Solution>
