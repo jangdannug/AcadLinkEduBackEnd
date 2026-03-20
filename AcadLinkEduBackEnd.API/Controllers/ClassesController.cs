@@ -115,4 +115,24 @@ public class ClassesController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
+    [HttpPost("JoinClass")]
+    public async Task<IActionResult> JoinClass([FromBody] JoinClassRequest request)
+    {
+        try
+        {
+            var enrollment = await _classService.JoinClassAsync(request);
+            var data = new EnrollmentDto
+            {
+                Id = enrollment.Id,
+                ClassId = enrollment.ClassId,
+                StudentId = enrollment.StudentId,
+            };
+            return Ok(data);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
