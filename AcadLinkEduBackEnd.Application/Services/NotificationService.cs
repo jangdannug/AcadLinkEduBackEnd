@@ -23,7 +23,9 @@ public class NotificationService
 
     public async Task<bool> ToggleNotificationReadAsync(int id, bool isRead)
     {
-        var resp = await _supabase.From<Notification>().Where(n => n.Id == id).Update(new Notification { IsRead = isRead });
+        var resp = await _supabase.From<Notification>().Where(n => n.Id == id)
+            .Set(n => n.IsRead, isRead)
+            .Update();
         return resp.Models != null && resp.Models.Any();
     }
 
@@ -38,5 +40,13 @@ public class NotificationService
 
         var check = await _supabase.From<Notification>().Where(n => n.Id == id).Get();
         return !check.Models.Any();
+    }
+
+    public Task NotifyClassStudentsAsync(int classId, string message)
+    {
+        // Here you would query students enrolled in the class and send notifications
+        // For now, just log:
+        Console.WriteLine($"Notify students of class {classId}: {message}");
+        return Task.CompletedTask;
     }
 }

@@ -60,19 +60,25 @@ namespace AcadLinkEduBackEnd.API.Controllers
                     Role = createdUser.Role,
                     IsVerified = createdUser.IsVerified
                 };
-                return CreatedAtAction(nameof(GetUsers), new { id = dto.Id }, dto);
+                return CreatedAtAction(
+                    nameof(GetUsers),
+                    new { id = dto.Id },
+                    new { success = true, data = dto }
+                );
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("Email already registered"))
             {
-                return Conflict(new { message = ex.Message });
+                return Conflict(new { success = false, message = ex.Message });
             }
+
             catch (PostgrestException ex)
             {
-                return StatusCode(StatusCodes.Status502BadGateway, ex.Message);
+                return StatusCode(StatusCodes.Status502BadGateway, new { success = false, message = ex.Message });
             }
+
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = ex.Message });
             }
         }
 

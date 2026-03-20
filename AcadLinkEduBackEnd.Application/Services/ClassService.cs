@@ -1,4 +1,5 @@
 using AcadLinkEduBackEnd.Application.Dtos;
+using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
 using Supabase;
@@ -44,7 +45,7 @@ public class ClassService
             {
                 var studentSubmissions = submissions.Where(s => s.StudentId == studentId.Value).ToList();
                 var submittedIds = studentSubmissions.Select(s => s.ActivityId).ToList();
-                var submittedCount = classMissions.Count(a => submittedIds.Contains(a.Id));
+                var submittedCount = classMissions.Count(a => submittedIds.Contains((int)a.Id));
                 stats = new ClassStats
                 {
                     Total = classMissions.Count,
@@ -92,7 +93,7 @@ public class ClassService
 
             var studentSubmissions = submissions.Where(s => activities.Select(a => a.Id).Contains(s.ActivityId)).ToList();
             var submittedIds = studentSubmissions.Select(s => s.ActivityId).ToList();
-            var submittedCount = activities.Count(a => submittedIds.Contains(a.Id));
+            var submittedCount = activities.Count(a => submittedIds.Contains((int)a.Id));
 
             stats = new ClassStats
             {
@@ -157,9 +158,17 @@ public class ClassService
         return insertResp.Models.First();
     }
 
-    public async Task<Class> CreateAsync(Class c)
+    public async Task<Class> CreateAsync(ClassRequest c)
     {
-        var response = await _supabase.From<Class>().Insert(c);
+        var data = new Class
+        {
+            Name = c.Name,
+            Description = c.Description,
+            TeacherId = c.TeacherId,
+            InviteCode = Guid.NewGuid().ToString("N").Substring(0, 7).ToUpper()
+        };
+
+        var response = await _supabase.From<Class>().Insert(data);
         return response.Models.First();
     }
 

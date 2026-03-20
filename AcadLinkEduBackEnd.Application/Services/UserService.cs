@@ -134,7 +134,13 @@ namespace AcadLinkEduBackEnd.Application.Services
             // Update each user individually to mark as verified
             foreach (var id in ids)
             {
-                await _supabase.From<User>().Where(u => u.Id == id).Update(new User { IsVerified = true });
+               
+            await _supabase
+                    .From<User>()
+                    .Where(u => u.Id == id)
+                    .Set(u => u.IsVerified, true)
+                    .Update();
+
             }
 
             return true;
