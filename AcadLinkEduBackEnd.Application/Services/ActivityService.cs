@@ -1,3 +1,4 @@
+using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
 using Supabase;
@@ -26,10 +27,19 @@ public class ActivityService
         return response.Models.ToList();
     }
 
-    public async Task<Activity> CreateActivityAsync(Activity activity)
+    public async Task<Activity> CreateActivityAsync(ActivityDto activity)
     {
         // Insert activity
-        var insertResp = await _supabase.From<Activity>().Insert(activity);
+        var data = new Activity
+        {
+            ClassId = activity.ClassId,
+            Title = activity.Title,
+            Description = activity.Description,
+            Deadline = activity.Deadline,
+            RequiredFiles = activity.RequiredFiles
+        };
+
+        var insertResp = await _supabase.From<Activity>().Insert(data);
         var created = insertResp.Models.First();
 
         // Notify students enrolled in the class
@@ -54,11 +64,35 @@ public class ActivityService
         return created;
     }
 
-    public async Task<Activity> UpdateActivityAsync(int id, Activity data)
+    public async Task<Activity> UpdateActivityAsync(int id, ActivityDto data)
     {
-        var resp = await _supabase.From<Activity>().Where(a => a.Id == id).Update(data);
+        var dataToUpdate = new Activity
+        {
+            ClassId = data.ClassId,
+            Title = data.Title,
+            Description = data.Description,
+            Deadline = data.Deadline,
+            RequiredFiles = data.RequiredFiles
+        };
+        var resp = await _supabase.From<Activity>().Where(a => a.Id == id).Update(dataToUpdate);
         var updated = resp.Models.FirstOrDefault();
         if (updated == null) throw new KeyNotFoundException("Activity not found");
         return updated;
     }
+
+    //public async Task<Activity> DeleteActivityAsync(int id, ActivityDto data)
+    //{
+    //    var dataToUpdate = new Activity
+    //    {
+    //        ClassId = data.ClassId,
+    //        Title = data.Title,
+    //        Description = data.Description,
+    //        Deadline = data.Deadline,
+    //        RequiredFiles = data.RequiredFiles
+    //    };
+    //    var resp = await _supabase.From<Activity>().Where(a => a.Id == id).Update(dataToUpdate);
+    //    var updated = resp.Models.FirstOrDefault();
+    //    if (updated == null) throw new KeyNotFoundException("Activity not found");
+    //    return updated;
+    //}
 }

@@ -1,5 +1,6 @@
 using AcadLinkEduBackEnd.Application.Dtos;
 using AcadLinkEduBackEnd.Application.Services;
+using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Supabase.Postgrest.Exceptions;
@@ -54,13 +55,15 @@ public class ClassesController : ControllerBase
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Class input)
+    [HttpPost("Create")]
+    public async Task<IActionResult> Create([FromBody] ClassRequest input)
     {
         try
         {
             var created = await _classService.CreateAsync(input);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+
+
+            return Ok(new { success = true, id = created.Id });
         }
         catch (PostgrestException ex)
         {

@@ -7,8 +7,8 @@ namespace AcadLinkEduBackEnd.Domain.Entities
     public class Enrollment : BaseModel
     {
         [PrimaryKey("id")]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int StudentId { get; set; }
-        public int ClassId { get; set; }
+        public int? ClassId { get; set; }
     }
 }

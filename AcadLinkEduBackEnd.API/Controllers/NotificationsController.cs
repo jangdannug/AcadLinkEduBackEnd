@@ -45,43 +45,22 @@ public class NotificationsController : ControllerBase
         }
     }
 
-    // PUT /api/notifications/{id}/read
-    // Body: { "isRead": true }
-    // Toggles the read status for a single notification. Returns the updated item.
-    //[HttpPut("{id}/read")]
-    //public async Task<IActionResult> ToggleRead(string id, [FromBody] ToggleReadRequest body)
-    //{
-    //    await Task.Delay(300);
 
-    //    lock (_lock)
-    //    {
-    //        var item = _store.FirstOrDefault(n => n.Id == id);
-    //        if (item == null) return NotFound(new { success = false, message = "Notification not found" });
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var response = await _notifService.DeleteNotificationAsync(int.Parse(id));
 
-    //        item.IsRead = body.IsRead;
-    //        return Ok(new { success = true, data = item });
-    //    }
-    //}
+        return Ok(new { success = true });
+        
+    }
 
-    //public class ToggleReadRequest
-    //{
-    //    public bool IsRead { get; set; }
-    //}
 
-    //// DELETE /api/notifications/{id}
-    //// Deletes a notification and returns success flag.
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> Delete(string id)
-    //{
-    //    await Task.Delay(300);
+    [HttpPatch("{id}/Read")]
+    public async Task<IActionResult> ToggleRead(int id, [FromQuery] bool isRead)
+    {
+        await _notifService.ToggleNotificationReadAsync(id, isRead);
+        return Ok(new { success = true });
+    }
 
-    //    lock (_lock)
-    //    {
-    //        var index = _store.FindIndex(n => n.Id == id);
-    //        if (index == -1) return NotFound(new { success = false, message = "Notification not found" });
-
-    //        _store.RemoveAt(index);
-    //        return Ok(new { success = true });
-    //    }
-    //}
 }
