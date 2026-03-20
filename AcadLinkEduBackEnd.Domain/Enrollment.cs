@@ -8,7 +8,9 @@ namespace AcadLinkEduBackEnd.Domain.Entities
     {
         [PrimaryKey("id")]
         public int? Id { get; set; }
-        public int StudentId { get; set; }
+        [Column("student_id")]
+        public int? StudentId { get; set; }
+        [Column("class_id")]
         public int? ClassId { get; set; }
     }
 }

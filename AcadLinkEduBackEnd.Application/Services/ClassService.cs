@@ -135,22 +135,22 @@ public class ClassService
         return response.Models.First();
     }
 
-    public async Task<Enrollment> JoinClassAsync(int studentId, string inviteCode)
+    public async Task<Enrollment> JoinClassAsync(JoinClassRequest request)
     {
-        var classesResp = await _supabase.From<Class>().Where(c => c.InviteCode == inviteCode).Get();
+        var classesResp = await _supabase.From<Class>().Where(c => c.InviteCode == request.InviteCode).Get();
         var targetClass = classesResp.Models.FirstOrDefault();
         if (targetClass == null)
             throw new KeyNotFoundException("Invalid invite code");
 
         var enrollResp = await _supabase.From<Enrollment>()
-            .Where(e => e.StudentId == studentId && e.ClassId == targetClass.Id)
+            .Where(e => e.StudentId == request.StudentId && e.ClassId == targetClass.Id)
             .Get();
         if (enrollResp.Models.Any())
             throw new InvalidOperationException("Already joined");
 
         var newEnrollment = new Enrollment
         {
-            StudentId = studentId,
+            StudentId = (int)request.StudentId,
             ClassId = targetClass.Id
         };
 

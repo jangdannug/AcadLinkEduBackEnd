@@ -20,7 +20,16 @@ public class ActivitiesController : ControllerBase
     public async Task<IActionResult> Get([FromQuery] int? classId)
     {
         var activities = await _activityService.GetActivitiesAsync(classId);
-        return Ok(activities);
+        var data = activities.Select(a => new ActivityDto
+        {
+            Id = a.Id,
+            ClassId = a.ClassId,
+            Title = a.Title,
+            Description = a.Description,
+            Deadline = a.Deadline,
+            RequiredFiles = a.RequiredFiles
+        }).ToList();
+        return Ok(data);
     }
 
     // POST: api/Activities

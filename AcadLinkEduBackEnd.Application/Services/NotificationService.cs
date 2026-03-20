@@ -42,7 +42,7 @@ public class NotificationService
         return !check.Models.Any();
     }
 
-    public Task NotifyClassStudentsAsync(int classId, string message)
+    public Task NotifyClassStudentsAsync(int? classId, string message)
     {
         // Here you would query students enrolled in the class and send notifications
         // For now, just log:

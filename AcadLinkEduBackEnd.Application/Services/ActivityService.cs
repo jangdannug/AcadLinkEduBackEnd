@@ -50,7 +50,7 @@ public class ActivityService
         {
             var notification = new Notification
             {
-                UserId = e.StudentId,
+                UserId = (int)e.StudentId,
                 Title = "New Mission Deployed",
                 Message = $"New activity: {created.Title} in your class!",
                 Type = "task",
