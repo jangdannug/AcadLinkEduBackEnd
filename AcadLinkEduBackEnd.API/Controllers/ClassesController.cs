@@ -18,6 +18,42 @@ public class ClassesController : ControllerBase
         _classService = classService;
     }
 
+    [HttpGet("tracking/{classId}")]
+    public async Task<IActionResult> Tracking(int classId)
+    {
+        try
+        {
+            var tracking = await _classService.GetClassTrackingAsync(classId);
+            return Ok(tracking);
+        }
+        catch (PostgrestException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpGet("Analytics/{teacherId}")]
+    public async Task<IActionResult> Analytics(int teacherId)
+    {
+        try
+        {
+            var analytics = await _classService.GetAnalyticsAsync(teacherId);
+            return Ok(analytics);
+        }
+        catch (PostgrestException ex)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int? studentId)
     {

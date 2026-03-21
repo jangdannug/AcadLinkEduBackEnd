@@ -1,3 +1,4 @@
+using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
 using Supabase;
@@ -26,7 +27,11 @@ public class SubmissionService
         return response.Models.ToList();
     }
 
-    public async Task<Submission> CreateSubmissionAsync(int activityId, int studentId, string fileUrl, string fileName)
+    public async Task<SubmissionDto> CreateSubmissionAsync(
+      int activityId,
+      int studentId,
+      string fileUrl,
+      string fileName)
     {
         var newSubmission = new Submission
         {
@@ -39,6 +44,17 @@ public class SubmissionService
         };
 
         var response = await _supabase.From<Submission>().Insert(newSubmission);
-        return response.Models.First();
+        var createdEntity = response.Models.First();
+
+        return new SubmissionDto
+        {
+            Id = createdEntity.Id,
+            ActivityId = createdEntity.ActivityId,
+            StudentId = createdEntity.StudentId,
+            FileUrl = createdEntity.FileUrl,
+            FileName = createdEntity.FileName,
+            SubmittedAt = createdEntity.SubmittedAt,
+            Status = createdEntity.Status
+        };
     }
 }

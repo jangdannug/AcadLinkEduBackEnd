@@ -1,6 +1,7 @@
 using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
+using System.Collections.Generic;
 using Supabase;
 using Supabase.Postgrest;
 
@@ -66,15 +67,48 @@ public class ActivityService
 
     public async Task<Activity> UpdateActivityAsync(int id, ActivityDto data)
     {
-        var dataToUpdate = new Activity
+        // Retrieve existing activity
+        var getResp = await _supabase.From<Activity>().Where(a => a.Id == id).Get();
+        var existing = getResp.Models.FirstOrDefault();
+        if (existing == null) throw new KeyNotFoundException("Activity not found");
+
+        // Apply only provided fields
+        var any = false;
+        if (data.ClassId.HasValue)
         {
-            ClassId = data.ClassId,
-            Title = data.Title,
-            Description = data.Description,
-            Deadline = data.Deadline,
-            RequiredFiles = data.RequiredFiles
-        };
-        var resp = await _supabase.From<Activity>().Where(a => a.Id == id).Update(dataToUpdate);
+            existing.ClassId = data.ClassId;
+            any = true;
+        }
+
+        if (data.Title != null)
+        {
+            existing.Title = data.Title;
+            any = true;
+        }
+
+        if (data.Description != null)
+        {
+            existing.Description = data.Description;
+            any = true;
+        }
+
+        if (data.Deadline.HasValue)
+        {
+            existing.Deadline = data.Deadline;
+            any = true;
+        }
+
+        if (data.RequiredFiles != null)
+        {
+            existing.RequiredFiles = data.RequiredFiles;
+            any = true;
+        }
+
+        if (!any)
+            throw new ArgumentException("No fields provided to update", nameof(data));
+
+        var resp = await _supabase.From<Activity>().Where(a => a.Id == id).Update(existing);
+
         var updated = resp.Models.FirstOrDefault();
         if (updated == null) throw new KeyNotFoundException("Activity not found");
         return updated;

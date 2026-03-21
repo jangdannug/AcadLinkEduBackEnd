@@ -40,13 +40,24 @@ public class ActivitiesController : ControllerBase
         {
             var activity = await _activityService.CreateActivityAsync(request);
 
+            var data = new ActivityDto
+            {
+                Id = activity.Id,
+                ClassId = activity.ClassId,
+                Title = activity.Title,
+                Description = activity.Description,
+                Deadline = activity.Deadline,
+                RequiredFiles = activity.RequiredFiles
+
+            };
+
             // Notify students
             await _notificationService.NotifyClassStudentsAsync(
                 request.ClassId,
                 $"New activity: {activity.Title} deployed!"
             );
 
-            return Ok(activity);
+            return Ok(data);
         }
         catch (Exception ex)
         {
@@ -61,7 +72,17 @@ public class ActivitiesController : ControllerBase
         try
         {
             var updated = await _activityService.UpdateActivityAsync(id, request);
-            return Ok(updated);
+
+            var data = new ActivityDto
+            {
+                Id = updated.Id,
+                ClassId = updated.ClassId,
+                Title = updated.Title,
+                Description = updated.Description,
+                Deadline = updated.Deadline,
+                RequiredFiles = updated.RequiredFiles
+            };
+            return Ok(data);
         }
         catch (KeyNotFoundException)
         {
