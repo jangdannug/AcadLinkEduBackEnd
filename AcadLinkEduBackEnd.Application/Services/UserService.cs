@@ -145,5 +145,17 @@ namespace AcadLinkEduBackEnd.Application.Services
 
             return true;
         }
+
+        public async Task<List<User>> GetAllStudentsAsync()
+        {
+            var response = await _supabase
+                .From<User>()
+                .Where(u => u.Role == "student")
+                .Get();
+
+            return response.Models;
+        }
+
+
     }
 }
