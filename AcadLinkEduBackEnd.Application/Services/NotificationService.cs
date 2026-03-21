@@ -1,3 +1,4 @@
+using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
 using Supabase;
@@ -48,5 +49,25 @@ public class NotificationService
         // For now, just log:
         Console.WriteLine($"Notify students of class {classId}: {message}");
         return Task.CompletedTask;
+    }
+
+    public async Task NotifyUserCreateClassAsync(List<User> users, string title, string message)
+    {
+        foreach (var user in users)
+        {
+            var notification = new Notification
+            {
+                UserId = user.Id,
+                Title = title,
+                Message = message,
+                Type = "info",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _supabase
+                .From<Notification>()
+                .Insert(notification);
+        }
     }
 }

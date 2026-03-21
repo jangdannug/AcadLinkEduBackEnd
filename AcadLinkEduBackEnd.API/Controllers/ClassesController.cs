@@ -12,10 +12,14 @@ namespace AcadLinkEduBackEnd.API.Controllers;
 public class ClassesController : ControllerBase
 {
     private readonly ClassService _classService;
+    private readonly UserService _userService;
+    private readonly NotificationService _notificationService;
 
-    public ClassesController(ClassService classService)
+    public ClassesController(ClassService classService, NotificationService notificationService, UserService userService)
     {
         _classService = classService;
+        _userService = userService;
+        _notificationService = notificationService;
     }
 
     [HttpGet("tracking/{classId}")]
@@ -98,6 +102,13 @@ public class ClassesController : ControllerBase
         {
             var created = await _classService.CreateAsync(input);
 
+            var studentIds = await _userService.GetAllStudentsAsync();
+
+            await _notificationService.NotifyUserCreateClassAsync(
+                studentIds,
+                $"New Class Created: {input.Name}",
+               input.Description
+            );
 
             return Ok(new { success = true, id = created.Id });
         }
