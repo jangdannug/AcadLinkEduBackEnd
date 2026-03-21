@@ -54,7 +54,6 @@ public class ActivitiesController : ControllerBase
             // Notify students
             await _notificationService.NotifyClassStudentsAsync(
                 request.ClassId,
-                request.Title,
                 $"New activity: {activity.Title} deployed!"
             );
 
