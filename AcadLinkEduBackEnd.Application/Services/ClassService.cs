@@ -15,6 +15,54 @@ public class ClassService
     {
         _supabase = supabaseService.Client;
     }
+
+    public async Task<List<ClassTrackingDto>> GetClassTrackingAsync(int classId)
+    {
+        // enrollments for class
+        var enrollResp = await _supabase.From<Domain.Entities.Enrollment>().Where(e => e.ClassId == classId).Get();
+        var classEnrollments = enrollResp.Models;
+
+        // activities for class
+        var activitiesResp = await _supabase.From<Domain.Entities.Activity>().Where(a => a.ClassId == classId).Get();
+        var classActivities = activitiesResp.Models;
+
+        // users
+        var usersResp = await _supabase.From<Domain.Entities.User>().Get();
+        var users = usersResp.Models;
+
+        // submissions
+        var subsResp = await _supabase.From<Domain.Entities.Submission>().Get();
+        var submissions = subsResp.Models;
+
+        var result = new List<ClassTrackingDto>();
+
+        foreach (var e in classEnrollments)
+        {
+            var student = users.FirstOrDefault(u => u.Id == e.StudentId);
+            var studentSubmissions = submissions.Where(s => s.StudentId == e.StudentId).ToList();
+
+            var activityStatuses = classActivities.Select(a => {
+                var submission = studentSubmissions.FirstOrDefault(s => s.ActivityId == a.Id);
+                return new ClassTrackingActivityDto
+                {
+                    ActivityId = a.Id,
+                    ActivityTitle = a.Title,
+                    Status = submission != null ? "submitted" : "pending",
+                    SubmittedAt = submission?.SubmittedAt
+                };
+            }).ToList();
+
+            result.Add(new ClassTrackingDto
+            {
+                StudentId = e.StudentId,
+                StudentName = student?.Name,
+                StudentEmail = student?.Email,
+                Activities = activityStatuses
+            });
+        }
+
+        return result;
+    }
     // Get all classes with optional student stats/enrollment
     public async Task<List<ClassDto>> GetAllAsync(int? studentId = null)
     {
@@ -193,5 +241,45 @@ public class ClassService
     public Task<List<ClassDto>> GetForStudentAsync(int studentId)
     {
         return GetAllAsync(studentId);
+    }
+
+    public async Task<AnalyticsDto> GetAnalyticsAsync(int teacherId)
+    {
+        // get classes for teacher
+        var classesResp = await _supabase.From<Domain.Entities.Class>().Where(c => c.TeacherId == teacherId).Get();
+        var teacherClasses = classesResp.Models;
+        var classIds = teacherClasses.Select(c => c.Id).Where(id => id.HasValue).Select(id => id!.Value).ToList();
+
+        // get activities for those classes
+        var activitiesResp = await _supabase.From<Domain.Entities.Activity>().Get();
+        var activities = activitiesResp.Models.Where(a => a.ClassId.HasValue && classIds.Contains(a.ClassId.Value)).ToList();
+        var activityIds = activities.Select(a => a.Id).Where(id => id.HasValue).Select(id => id!.Value).ToList();
+
+        // get submissions for those activities
+        var submissionsResp = await _supabase.From<Domain.Entities.Submission>().Get();
+        var submissions = submissionsResp.Models.Where(s => activityIds.Contains((int)s.ActivityId)).ToList();
+
+        // get enrollments for those classes
+        var enrollResp = await _supabase.From<Domain.Entities.Enrollment>().Get();
+        var enrollments = enrollResp.Models.Where(e => e.ClassId.HasValue && classIds.Contains(e.ClassId.Value)).ToList();
+
+        var totalClasses = teacherClasses.Count;
+        var totalStudents = enrollments.Count;
+        var totalSubmissions = submissions.Count;
+
+        var completionRate = 0;
+        if (activities.Count > 0)
+        {
+            // original JS scaled by 10 per activity, replicating that behavior
+            completionRate = (int)Math.Round((double)totalSubmissions / (activities.Count * 10) * 100);
+        }
+
+        return new AnalyticsDto
+        {
+            TotalClasses = totalClasses,
+            TotalStudents = totalStudents,
+            TotalSubmissions = totalSubmissions,
+            CompletionRate = completionRate
+        };
     }
 }

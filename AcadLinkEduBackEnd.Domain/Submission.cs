@@ -7,12 +7,25 @@ namespace AcadLinkEduBackEnd.Domain.Entities
     public class Submission : BaseModel
     {
         [PrimaryKey("id")]
-        public int Id { get; set; }
-        public int ActivityId { get; set; }
-        public int StudentId { get; set; }
-        public string FileUrl { get; set; } = null!;
-        public string FileName { get; set; } = null!;
-        public DateTime SubmittedAt { get; set; }
-        public string Status { get; set; } = null!;
+        public int? Id { get; set; }
+        
+        [Column("activity_id")]
+        public int? ActivityId { get; set; }
+        
+        [Column("student_id")]
+        public int? StudentId { get; set; }
+        
+        [Column("file_url")]
+        public string? FileUrl { get; set; } = null!;
+        
+        [Column("file_name")]
+        public string? FileName { get; set; } = null!;
+        
+        [Column("status")]
+        public string? Status { get; set; } = null!;
+
+        [Column("submitted_at")]
+        public DateTime? SubmittedAt { get; set; }
+     
     }
 }
