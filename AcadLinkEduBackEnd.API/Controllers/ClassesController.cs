@@ -175,6 +175,13 @@ public class ClassesController : ControllerBase
                 ClassId = enrollment.ClassId,
                 StudentId = enrollment.StudentId,
             };
+
+            await _notificationService.NotifyJoinClassAsync(
+                request.InviteCode,
+                request.StudentId
+                );
+
+
             return Ok(data);
         }
         catch (Exception ex)

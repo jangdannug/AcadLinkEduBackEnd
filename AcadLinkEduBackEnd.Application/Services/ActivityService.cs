@@ -1,9 +1,6 @@
 using AcadLinkEduBackEnd.Domain.DTO;
 using AcadLinkEduBackEnd.Domain.Entities;
 using AcadLinkEduBackEnd.Infrastructure;
-using System.Collections.Generic;
-using Supabase;
-using Supabase.Postgrest;
 
 namespace AcadLinkEduBackEnd.Application.Services;
 
@@ -111,6 +108,25 @@ public class ActivityService
 
         var updated = resp.Models.FirstOrDefault();
         if (updated == null) throw new KeyNotFoundException("Activity not found");
+
+        // Notify students enrolled in the class
+        var enrollResp = await _supabase.From<Enrollment>().Where(e => e.ClassId == existing.ClassId).Get();
+        var enrollments = enrollResp.Models;
+
+        foreach (var e in enrollments)
+        {
+            var notification = new Notification
+            {
+                UserId = (int)e.StudentId,
+                Title = "Mission Update",
+                Message = $"Updated activity: {existing.Title} in your class!",
+                Type = "task",
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _supabase.From<Notification>().Insert(notification);
+        }
         return updated;
     }
 
